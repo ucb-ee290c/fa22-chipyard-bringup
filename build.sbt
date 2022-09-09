@@ -277,7 +277,7 @@ lazy val fpga_shells = (project in file("./fpga/fpga-shells"))
   .dependsOn(rocketchip, sifive_blocks)
   .settings(libraryDependencies ++= rocketLibDeps.value)
   .settings(commonSettings)
-
 lazy val fpga_platforms = (project in file("./fpga"))
   .dependsOn(chipyard, fpga_shells)
+  .settings(chiselSettings)
   .settings(commonSettings)

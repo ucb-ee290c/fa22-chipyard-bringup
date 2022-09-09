@@ -44,6 +44,20 @@ ifeq ($(SUB_PROJECT),bringup)
 	FPGA_BRAND        ?= xilinx
 endif
 
+ifeq ($(SUB_PROJECT),osci)
+	SBT_PROJECT       ?= fpga_platforms
+	MODEL             ?= OsciVCU118FPGATestHarness
+	VLOG_MODEL        ?= OsciVCU118FPGATestHarness
+	MODEL_PACKAGE     ?= chipyard.fpga.vcu118.osci
+	CONFIG            ?= RocketOsciConfig
+	CONFIG_PACKAGE    ?= chipyard.fpga.vcu118.osci
+	GENERATOR_PACKAGE ?= chipyard
+	TB                ?= none # unused
+	TOP               ?= ChipTop
+	BOARD             ?= vcu118
+	FPGA_BRAND        ?= xilinx
+endif
+
 ifeq ($(SUB_PROJECT),arty)
 	# TODO: Fix with Arty
 	SBT_PROJECT       ?= fpga_platforms
