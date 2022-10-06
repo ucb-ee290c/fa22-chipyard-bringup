@@ -42,12 +42,12 @@ class WithOsciPeripherals extends Config((site, here, up) => {
     TSIHostParams(
       offchipSerialIfWidth = 1,
       mmioBaseAddress = BigInt(0x64006000),
-      mmioSourceId = 1 << 13, // manager source
+      mmioSourceId = 1 << 4, // manager source
       serdesParams = TSIHostSerdesParams(
         clientPortParams = TLMasterPortParameters.v1(
           clients = Seq(TLMasterParameters.v1(
             name = "tl-tsi-host-serdes",
-            sourceId = IdRange(0, (1 << 13))))),
+            sourceId = IdRange(0, (1 << 4))))),
         managerPortParams = TLSlavePortParameters.v1(
           managers = Seq(TLSlaveParameters.v1(
             address = Seq(AddressSet(0, BigInt("FFFFFFFF", 16))), // access everything on chip
@@ -61,11 +61,11 @@ class WithOsciPeripherals extends Config((site, here, up) => {
             supportsArithmetic = TransferSizes(1, (1 << 15)),
             supportsLogical    = TransferSizes(1, (1 << 15)))),
           endSinkId = 1 << 6, // manager sink
-          beatBytes = 8)),
+          beatBytes = 4)),
       targetMasterPortParams = MasterPortParams(
         base = BigInt("80000000", 16),
         size = site(VCU118DDR2Size),
-        beatBytes = 8, // comes from test chip
+        beatBytes = 4, // comes from test chip
         idBits = 4) // comes from VCU118 idBits in XilinxVCU118MIG
       ))
 })
