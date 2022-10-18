@@ -14,7 +14,7 @@ sim_name := none
 #########################################################################################
 # include shared variables
 #########################################################################################
-SUB_PROJECT ?= vcu118
+SUB_PROJECT ?= osci
 
 ifeq ($(SUB_PROJECT),vcu118)
 	SBT_PROJECT       ?= fpga_platforms
@@ -135,8 +135,20 @@ $(BIT_FILE): $(synth_list_f)
 			-board "$(BOARD)" \
 			-ip-vivado-tcls "$(shell find '$(build_dir)' -name '*.vivado.tcl')"
 
+
 .PHONY: bitstream
 bitstream: $(BIT_FILE)
+
+.PHONY: synth-only
+synth-only:
+	cd $(build_dir); vivado \
+		-nojournal -mode batch \
+		-source $(fpga_common_script_dir)/synth-only.tcl \
+		-tclargs \
+			-top-module "$(MODEL)" \
+			-F "$(synth_list_f)" \
+			-board "$(BOARD)" \
+			-ip-vivado-tcls "$(shell find '$(build_dir)' -name '*.vivado.tcl')"
 
 .PHONY: debug-bitstream
 debug-bitstream: $(build_dir)/obj/post_synth.dcp

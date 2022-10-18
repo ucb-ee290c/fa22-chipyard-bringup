@@ -41,31 +41,31 @@ class WithOsciPeripherals extends Config((site, here, up) => {
   case PeripheryTSIHostKey => List(
     TSIHostParams(
       offchipSerialIfWidth = 1,
-      mmioBaseAddress = BigInt(0x64006000),
-      mmioSourceId = 1 << 4, // manager source
+      mmioBaseAddress = BigInt(0x64006000),  // this matches what's in vcu118_peripherals.h
+      mmioSourceId = 1 << 4, // manager source, [2:0]  io_out_bits_chanId
       serdesParams = TSIHostSerdesParams(
         clientPortParams = TLMasterPortParameters.v1(
           clients = Seq(TLMasterParameters.v1(
             name = "tl-tsi-host-serdes",
-            sourceId = IdRange(0, (1 << 4))))),
+            sourceId = IdRange(0, (1 << 4))))),  // [2:0]  io_out_bits_chanId
         managerPortParams = TLSlavePortParameters.v1(
           managers = Seq(TLSlaveParameters.v1(
             address = Seq(AddressSet(0, BigInt("FFFFFFFF", 16))), // access everything on chip
             regionType = RegionType.UNCACHED,
             executable = true,
-            supportsGet        = TransferSizes(1, (1 << 15)), // [3:0] io_out_bits_size - need 4 bits (16 values) to represent possible values
-            supportsPutFull    = TransferSizes(1, (1 << 15)),
-            supportsPutPartial = TransferSizes(1, (1 << 15)),
-            supportsAcquireT   = TransferSizes(1, (1 << 15)),
-            supportsAcquireB   = TransferSizes(1, (1 << 15)),
-            supportsArithmetic = TransferSizes(1, (1 << 15)),
-            supportsLogical    = TransferSizes(1, (1 << 15)))),
+            supportsGet        = TransferSizes(1, 1 << 15), // [3:0] io_out_bits_size - need 4 bits (2^4 values) to represent 2^(2^4) values
+            supportsPutFull    = TransferSizes(1, 1 << 15),
+            supportsPutPartial = TransferSizes(1, 1 << 15),
+            supportsAcquireT   = TransferSizes(1, 1 << 15),
+            supportsAcquireB   = TransferSizes(1, 1 << 15),
+            supportsArithmetic = TransferSizes(1, 1 << 15),
+            supportsLogical    = TransferSizes(1, 1 << 15))),
           endSinkId = 1 << 6, // manager sink
-          beatBytes = 4)),
+          beatBytes = 4)),  // can't tell what this affects
       targetMasterPortParams = MasterPortParams(
         base = BigInt("80000000", 16),
         size = site(VCU118DDR2Size),
-        beatBytes = 4, // comes from test chip
+        beatBytes = 8, // comes from test chip,  [63:0] io_out_bits_data,
         idBits = 4) // comes from VCU118 idBits in XilinxVCU118MIG
       ))
 })
@@ -76,16 +76,17 @@ class WithOsciVCU118System extends Config((site, here, up) => {
 
 class WithOsciAdditions extends Config(
   new WithOsciUART ++
-  new WithOsciI2C ++
+  // new WithOsciI2C ++
   new WithOsciGPIO ++
   new WithOsciTSIHost ++
   new WithTSITLIOPassthrough ++
-  new WithI2CIOPassthrough ++
+  // new WithI2CIOPassthrough ++
   new WithGPIOIOPassthrough ++
   new WithOsciPeripherals ++
   new WithOsciVCU118System)
 
 class RocketOsciConfig extends Config(
+  new WithFPGAFrequency(50) ++  // 50MHz
   new WithOsciAdditions ++
   new WithVCU118Tweaks ++
   new chipyard.RocketConfig)
