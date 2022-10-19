@@ -140,7 +140,7 @@ $(BIT_FILE): $(synth_list_f)
 bitstream: $(BIT_FILE)
 
 .PHONY: synth-only
-synth-only:
+synth-only: $(synth_list_f)
 	cd $(build_dir); vivado \
 		-nojournal -mode batch \
 		-source $(fpga_common_script_dir)/synth-only.tcl \
